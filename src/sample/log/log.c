@@ -10,7 +10,7 @@
 
 static struct mqtt_client client;
 static uint8_t sendbuf[2048];
-static  uint8_t recvbuf[1024];
+static uint8_t recvbuf[1024];
 
 int get_mac_addr(char *addr)
 {
