@@ -1,0 +1,7 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../fdk-aac/libAACenc/include/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../fdk-aac/libSYS/include/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/librtmp)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR} DIR_SRCS)
+AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/librtmp DIR_SRCS)
+add_library(rtmp STATIC ${DIR_SRCS})
