@@ -52,6 +52,8 @@ int main()
     log_init(app.conf.mqtt_url, app.conf.mqtt_port, app.conf.mqtt_user, app.conf.mqtt_passwd);
     LOGI("config and log init done");
 
+    for (;;) sleep(1);
+
     return 0;
 }
 
