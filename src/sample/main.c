@@ -67,6 +67,7 @@ err:
 
 int audio_frame_callback (uint8_t *frame, int len, int64_t timestamp, int streamno)
 {
+    return 0;
     if (!frame) {
         LOGE("check param error");
         return -1;
@@ -92,7 +93,7 @@ int main()
         .event_cb = NULL,
         .log_cb = NULL,
     };
-    int audiotype = RTMP_PUB_AUDIO_AAC;
+    int audiotype = RTMP_PUB_AUDIO_NONE;//RTMP_PUB_AUDIO_AAC;
 
     if (ini_parse(CONFIG_FILE, conf_handler, &app.conf) < 0) {
         printf("load config file:%s error\n", CONFIG_FILE);

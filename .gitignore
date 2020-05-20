@@ -53,3 +53,4 @@ dkms.conf
 *.swp
 *.swo
 build
+output
