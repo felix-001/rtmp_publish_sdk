@@ -1,16 +1,16 @@
-// Last Update:2018-12-26 17:20:22
+// Last Update:2019-03-14 14:24:50
 /**
  * @file h264_decode.c
  * @brief 
- * @author liyq
+ * @author qiniu
  * @version 0.1.00
  * @date 2018-12-14
  */
 
 #include <string.h>
 #include <arpa/inet.h>
-#include "dbg_internal.h"
 #include "h264_decode.h"
+#include "dbg_internal.h"
 
 /*
  * the NAL start prefix code (it can also be 0x00000001, depends on the encoder implementation)
@@ -22,48 +22,56 @@ static int H264DecodeNalu( int *_pIndex, char *_pData, int _nStartCodeLen, OUT N
     NalUnit *pNalu = _pNalus + *_pIndex;
 
     if ( !_pNalus ) {
-        LOGI("DECODE_PARARM_ERROR");
         return DECODE_PARARM_ERROR;
     }
 
     pNalu->addr = _pData;
+    //LinkLogInfo("pNalu->addr = %p\n", pNalu->addr );
     pNalu->type = (*_pData) & 0x1F;
-    if ( *_pIndex > 0 )
+    if ( *_pIndex > 0 ) {
         ( _pNalus + *_pIndex - 1)->size = _pData - ( _pNalus + *_pIndex - 1 )->addr - _nStartCodeLen;
 
+        //LinkLogInfo("( _pNalus + *_pIndex - 1)->size = %d\n", ( _pNalus + *_pIndex - 1)->size);
+
+        if (( _pNalus + *_pIndex - 1)->size < 0 ) {
+            LOGE("deocde size < 0, size = %d\n", ( _pNalus + *_pIndex - 1)->size);
+            return DECODE_FRAME_FAIL;
+        }
+    }
     (*_pIndex) ++;
     if ( *_pIndex >= _nMax ) {
-        LOGI("DECODE_BUF_OVERFLOW\n");
+        LOGE("DECODE_BUF_OVERFLOW\n");
         return DECODE_BUF_OVERFLOW;
     }
+
     return 0;
 }
 
-int H264DecodeFrame( char *_pFrame, int _nLen, OUT NalUnit *_pNalus, int *_pSize )
+int H264ParseNalUnit( char *_pFrame, int _nLen, OUT NalUnit *_pNalus, int *_pSize )
 {
     char *pStart = _pFrame, *pEnd = pStart + _nLen;
-    unsigned int *pStartCode = NULL, ret = 0;
+    unsigned int *pStartCode = NULL;
     int nIndex = 0;
+    int ret = 0;
 
     if ( !_pFrame || _nLen <= 0 || !_pNalus || !_pSize ) {
-        LOGI("DECODE_PARARM_ERROR\n");
         return DECODE_PARARM_ERROR;
     }
 
-    while( pStart <= pEnd ) {
+    while( pStart < pEnd-4 ) {// if the last 4 byte  has 00000001, but no data, so ignore it
         pStartCode = (unsigned int *)pStart;
         if ( htonl(*pStartCode) == NALU_START_CODE ) {
             pStart += 4;// skip start code
             ret = H264DecodeNalu( &nIndex, pStart, 4, _pNalus, *_pSize );
             if ( ret < 0 ) {
-                LOGI("DECODE_FRAME_FAIL\n");
+                LOGE("DECODE_FRAME_FAIL\n");
                 return DECODE_FRAME_FAIL;
             }
         } else if (( htonl(*pStartCode) >> 8 ) == NALU_START_CODE ) {
             pStart += 3;
             ret = H264DecodeNalu( &nIndex, pStart, 3,  _pNalus, *_pSize );
             if ( ret < 0 ) {
-                LOGI("DECODE_FRAME_FAIL\n");
+                LOGE("DECODE_FRAME_FAIL\n");
                 return DECODE_FRAME_FAIL;
             }
         } else {
@@ -72,11 +80,11 @@ int H264DecodeFrame( char *_pFrame, int _nLen, OUT NalUnit *_pNalus, int *_pSize
     }
 
     /* the last one */
-    _pNalus += nIndex -1 ;
-    if ( nIndex == 1 ) {
-        _pNalus->size = pEnd - _pNalus ->addr ;
-    } else {
-        _pNalus->size = pEnd - ( _pNalus - 1 )->addr ;
+    (_pNalus + nIndex - 1)->size = pEnd - (_pNalus + nIndex - 1) ->addr ;
+    if ( (_pNalus + nIndex - 1)->size < 0 ) {
+        LOGE("index = %d\n", nIndex );
+        //DUMPBUF( _pFrame,  _nLen );
+        return DECODE_FRAME_FAIL;
     }
 
     *_pSize = nIndex;

@@ -38,6 +38,6 @@ typedef struct {
 } NalUnit;
 
 
-extern int H264DecodeFrame( char *_pFrame, int _nLen, OUT NalUnit *_pNalus, int *_pSize );
+extern int H264ParseNalUnit( char *_pFrame, int _nLen, OUT NalUnit *_pNalus, int *_pSize );
 
 #endif  /*H264_DECODE_H*/

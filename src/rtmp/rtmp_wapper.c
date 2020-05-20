@@ -77,7 +77,7 @@ int RtmpSendVideo( RtmpContex *_pConext, char *_pData,
 
     memset( pBuf, 0, _nSize );
     memset( nalus, 0, sizeof(nalus) );
-    ret = H264DecodeFrame( _pData, _nSize, nalus, &size );
+    ret = H264ParseNalUnit( _pData, _nSize, nalus, &size );
     if ( ret != DECODE_OK ) {
         LOG_E("H264DecodeFrame error, ret = %d\n", ret );
         goto err;
