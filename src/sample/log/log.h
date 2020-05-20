@@ -9,8 +9,8 @@
 
 #define xCONSOLE
 #ifdef CONSOLE
-    #define LOGI(fmt, args...) printf("%s:%d(%s) $ "fmt"\n", __FILENAME__, __LINE__, __FUNCTION__, ##args)
-    #define LOGE(fmt, args...) printf("\e[0;31m%s:%d(%s)$ "fmt"\n\e[0m", __FILENAME__, __LINE__, __FUNCTION__, ##args)
+    #define LOGI(fmt, args...) printf("%s:%d(%s) $ "fmt"", __FILENAME__, __LINE__, __FUNCTION__, ##args)
+    #define LOGE(fmt, args...) printf("\e[0;31m%s:%d(%s)$ "fmt"\e[0m", __FILENAME__, __LINE__, __FUNCTION__, ##args)
 #else
     #define LOGI(args...) log_out(__FILENAME__, __FUNCTION__, __LINE__, args)
     #define LOGE LOGI

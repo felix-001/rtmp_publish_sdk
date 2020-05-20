@@ -54,10 +54,9 @@ typedef struct {
 typedef struct {
     int audio_type;
     int stream_number;
-    char *media_file_path;
     int (*video_cb) (uint8_t *frame, int len, int iskey, int64_t timestamp, int stream_no);
     int (*audio_cb) (uint8_t *frame, int len, int64_t timestamp, int stream_no);
-    int (*event_cb)(int event, void *data, int streamno ;
+    int (*event_cb)(int event, void *data, int streamno);
     int (*log_cb)(char *log);
 } ipc_param_t;
 

@@ -102,9 +102,6 @@ void log_out(char *file, const char *function, int line, char *fmt, ...)
     va_start(arg, fmt);
     vsprintf(buf+strlen(buf), fmt, arg);
     va_end(arg);
-    strcat(buf, "\n");
-    printf("buf:%s\n", buf);
-    err = mqtt_publish(&client, topic, buf, strlen(buf) + 1, MQTT_PUBLISH_QOS_1);
-    printf("mqtt publish return : %d", err);
+    err = mqtt_publish(&client, topic, buf, strlen(buf), MQTT_PUBLISH_QOS_1);
 }
 

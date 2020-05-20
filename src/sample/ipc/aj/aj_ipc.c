@@ -13,24 +13,22 @@
 #include <stdio.h>
 #include "devsdk.h"
 #include "ipc.h"
+#include "public.h"
 
-#define BASIC() printf("%s:%d(%s) $ ", __FILE__, __LINE__, __FUNCTION__) 
-#define LOGI(args...) BASIC();printf(args)
-#define LOGE(args...) LOGI(args)
-
-struct stream_info;
-
-typedef struct {
-    ipc_param_t param;
-    int running;
-    struct stream_info streams[2];
-    ipc_dev_t *dev;
-} aj_ipc_t;
+struct aj_ipc;
 
 typedef struct stream_info {
     int stream_no;
-    aj_ipc_t *aj;
+    struct aj_ipc *aj;
 } stream_info_t;
+
+typedef struct aj_ipc {
+    ipc_param_t param;
+    int running;
+    stream_info_t streams[2];
+    ipc_dev_t *dev;
+} aj_ipc_t;
+
 
 static int aj_video_get_frame_callback( 
         int streamno,
@@ -102,9 +100,9 @@ int aj_alarm_callback( ALARM_ENTRY _alarm, void *pcontext)
         /* do nothing */
     }
 
-    if ( aj->event_cb ) {
+    if ( aj->param.event_cb ) {
         if ( alarm == EVENT_MOTION_DETECTION || alarm == EVENT_MOTION_DETECTION_DISAPEER ) {
-            for ( i=0; i<aj->stream_number; i++ )
+            for ( i=0; i<aj->param.stream_number; i++ )
                 aj->param.event_cb( alarm, _alarm.data, i );
         } else {
             aj->param.event_cb( alarm, _alarm.data, streamno );
@@ -136,7 +134,7 @@ int aj_ipc_init( struct ipc_dev_t *dev, ipc_param_t *param )
     aj->param = *param;
     for (i=0; i<param->stream_number; i++) {
         aj->streams[i].stream_no = i;
-        aj->stream[i].aj = aj;
+        aj->streams[i].aj = aj;
     }
     dev->priv = (void*)aj;
     rc = dev_sdk_init(DEV_SDK_PROCESS_APP);
@@ -160,7 +158,7 @@ static void aj_ipc_run( ipc_dev_t *dev )
     if ( !aj )
         return;
 
-    for (i=0; i<aj->parma.stream_number; i++) {
+    for (i=0; i<aj->param.stream_number; i++) {
         dev_sdk_start_video(0, i, aj_video_get_frame_callback, &aj->streams[i]);
         dev_sdk_start_audio(0, i, aj_audio_get_frame_callback, &aj->streams[i]);
     }
@@ -213,7 +211,7 @@ static int aj_get_media_config(int ch, media_config_t *config)
     video_encode = videoConfig.videoEncode.encodeCfg[0].encodeFormat.name;
     if (!strcmp(video_encode, "H264")) {
         config->video_type = IPC_VIDEO_H264;
-    } else if (!strncmp(video_encode, "H265")) {
+    } else if (!strcmp(video_encode, "H265")) {
         config->video_type = IPC_VIDEO_H265;
     } else {
         config->video_type = IPC_VIDEO_NONE;

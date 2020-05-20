@@ -9,4 +9,5 @@ if(CROSS_COMPILE)
 endif()
 
 project(ipc-rtmp)
+set(TARGET_DEVICE "simulator" CACHE STRING "target ipc device")
 add_subdirectory(src)
