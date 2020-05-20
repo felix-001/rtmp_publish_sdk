@@ -22,6 +22,7 @@ static int H264DecodeNalu( int *_pIndex, char *_pData, int _nStartCodeLen, OUT N
     NalUnit *pNalu = _pNalus + *_pIndex;
 
     if ( !_pNalus ) {
+        LOGI("DECODE_PARARM_ERROR");
         return DECODE_PARARM_ERROR;
     }
 
@@ -32,6 +33,7 @@ static int H264DecodeNalu( int *_pIndex, char *_pData, int _nStartCodeLen, OUT N
 
     (*_pIndex) ++;
     if ( *_pIndex >= _nMax ) {
+        LOGI("DECODE_BUF_OVERFLOW\n");
         return DECODE_BUF_OVERFLOW;
     }
     return 0;
@@ -44,6 +46,7 @@ int H264DecodeFrame( char *_pFrame, int _nLen, OUT NalUnit *_pNalus, int *_pSize
     int nIndex = 0;
 
     if ( !_pFrame || _nLen <= 0 || !_pNalus || !_pSize ) {
+        LOGI("DECODE_PARARM_ERROR\n");
         return DECODE_PARARM_ERROR;
     }
 
@@ -53,12 +56,14 @@ int H264DecodeFrame( char *_pFrame, int _nLen, OUT NalUnit *_pNalus, int *_pSize
             pStart += 4;// skip start code
             ret = H264DecodeNalu( &nIndex, pStart, 4, _pNalus, *_pSize );
             if ( ret < 0 ) {
+                LOGI("DECODE_FRAME_FAIL\n");
                 return DECODE_FRAME_FAIL;
             }
         } else if (( htonl(*pStartCode) >> 8 ) == NALU_START_CODE ) {
             pStart += 3;
             ret = H264DecodeNalu( &nIndex, pStart, 3,  _pNalus, *_pSize );
             if ( ret < 0 ) {
+                LOGI("DECODE_FRAME_FAIL\n");
                 return DECODE_FRAME_FAIL;
             }
         } else {
