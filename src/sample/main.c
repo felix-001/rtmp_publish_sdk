@@ -46,6 +46,28 @@ static int conf_handler(void* user, const char* section, const char* name, const
     PARSE_STR_CONF("MQTT_PORT", mqtt_port);
 }
 
+int rtmp_reconnect()
+{
+    int ret = 0;
+    int audiotype = RTMP_PUB_AUDIO_NONE;//RTMP_PUB_AUDIO_AAC;
+
+    LOGI("start rtmp reconnect");
+    RtmpDestroy(app.ctx);
+    app.ctx = RtmpNewContext(app.conf.rtmp_url, 10, audiotype, audiotype, RTMP_PUB_TIMESTAMP_ABSOLUTE);
+    if (!app.ctx) {
+        LOGE("RtmpNewContext() error");
+        return -1;
+    }
+
+    ret = RtmpConnect(app.ctx);
+    if (ret < 0) {
+        LOGE("RtmpConnect error");
+        return -1;
+    }
+
+    LOGI("rtmp reconnect OK");
+    return 0;
+}
 
 int video_frame_callback (uint8_t *frame, int len, int iskey, int64_t timestamp, int streamno)
 {
@@ -56,6 +78,7 @@ int video_frame_callback (uint8_t *frame, int len, int iskey, int64_t timestamp,
     pthread_mutex_lock( &app.mutex );
     if(RtmpSendVideo(app.ctx, frame, len, iskey, timestamp) < 0) {
         LOGE("RtmpSendVideo error");
+        rtmp_reconnect();
         pthread_mutex_unlock(&app.mutex);
         goto err;
     }
@@ -95,6 +118,7 @@ int main()
     };
     int audiotype = RTMP_PUB_AUDIO_NONE;//RTMP_PUB_AUDIO_AAC;
 
+    signal(SIGPIPE, SIG_IGN);
     if (ini_parse(CONFIG_FILE, conf_handler, &app.conf) < 0) {
         printf("load config file:%s error\n", CONFIG_FILE);
         return 0;

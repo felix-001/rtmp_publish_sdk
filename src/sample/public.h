@@ -16,4 +16,5 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <net/if.h>
+#include <signal.h>
 #include "log.h"
