@@ -6,3 +6,4 @@ todo:
 - [ ] crash自动加载gdb
 - [x] 断开连接重连,errno = 9
 - [x] 忽略broken pipe
+- [ ] 异常，报警，发邮件
