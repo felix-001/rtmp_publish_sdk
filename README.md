@@ -5,6 +5,7 @@ rtmp推流sdk
 - [x] 低内存占用
 - [x] 支持h264/h265
 - [x] 支持g711/aac
+- [x] rtmp推流
 
 # 编译
 - mkdir build
