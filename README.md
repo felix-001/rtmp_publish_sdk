@@ -1,5 +1,5 @@
 # ipc-rtmp
-网络摄像头rtmp推流sdk
+rtmp推流sdk
 
 # feature list
 - [x] 低内存占用
