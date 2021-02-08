@@ -1,5 +1,5 @@
 # ipc-rtmp
-摄像头rtmp推流
+网络摄像头rtmp推流sdk
 
 # API
 ## 创建rtmp推流实例
