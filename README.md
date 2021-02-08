@@ -6,6 +6,11 @@
 - [x] 支持h264/h265
 - [x] 支持g711/aac
 
+# 编译
+- mkdir build
+- cd build
+- cmake ..
+- make -j10
 
 # API
 ## 创建rtmp推流实例
