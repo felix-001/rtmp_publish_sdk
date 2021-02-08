@@ -31,3 +31,7 @@ int RtmpSendVideo( RtmpContex *_pConext, char *_pData,
 ```
 int RtmpDestroy( RtmpContex * _pConext );
 ```
+
+# author
+- treeswayinwind@gmail.com
+- 企鹅: 279191230
