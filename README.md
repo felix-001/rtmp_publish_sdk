@@ -32,6 +32,9 @@ int RtmpSendVideo( RtmpContex *_pConext, char *_pData,
 int RtmpDestroy( RtmpContex * _pConext );
 ```
 
+# sample
+[示例代码](./src/sample/main.c)
+
 # author
 - treeswayinwind@gmail.com
 - 企鹅: 279191230
